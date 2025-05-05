@@ -49,6 +49,8 @@ lib/config/firebase_config.dart
 # Cloud Functions
 functions/
 
+public/index.html
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
