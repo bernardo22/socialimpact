@@ -66,7 +66,7 @@ class GerirPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   if (profileType == ProfileType.instituicao) ...[
-                    CustomButton(
+                    /*CustomButton(
                       text: 'Gerir Voluntários',
                       onPressed: () => Navigator.pushNamed(context, AppRoutes.voluntarioList),
                     ),
@@ -84,7 +84,7 @@ class GerirPage extends StatelessWidget {
                     CustomButton(
                       text: 'Gerir Projetos Causa',
                       onPressed: () => Navigator.pushNamed(context, AppRoutes.projetoCausaList),
-                    ),
+                    ),*/
                     const SizedBox(height: 12),
                     CustomButton(
                       text: 'Gerir Instituição',
