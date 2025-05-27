@@ -164,7 +164,7 @@ Widget build(BuildContext context) {
               ),
               const SizedBox(height: 20),
               CustomButton(
-                text: isEdit ? 'Salvar Alterações' : 'Cadastrar',
+                text: isEdit ? 'Guardar Alterações' : 'Registar',
                 onPressed: _save,
               ),
             ],

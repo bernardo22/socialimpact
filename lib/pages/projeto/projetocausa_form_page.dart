@@ -252,7 +252,7 @@ class _ProjetoCausaFormPageState extends State<ProjetoCausaFormPage> {
                 ),
                 const SizedBox(height: 20),
                 CustomButton(
-                  text: isEdit ? 'Salvar Alterações' : 'Cadastrar',
+                  text: isEdit ? 'Guardar Alterações' : 'Registar',
                   onPressed: _save,
                 ),
               ],

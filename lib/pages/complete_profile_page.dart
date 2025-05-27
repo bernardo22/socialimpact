@@ -333,7 +333,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
                                   _currentInstituicao == null &&
                                   _currentDoador == null
                               ? "Criar Perfil"
-                              : "Salvar Alterações",
+                              : "Guardar Alterações",
                           onPressed: _saveChanges,
                           isFullWidth: true,
                         ),

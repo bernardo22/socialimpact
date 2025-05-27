@@ -222,7 +222,7 @@ class _AcaoVoluntariadoFormPageState extends State<AcaoVoluntariadoFormPage> {
                   _buildDateField('Notificação (Opcional)', _notificacaoDate, false),
                   const SizedBox(height: 20),
                   CustomButton(
-                    text: widget.acao == null ? 'Cadastrar' : 'Salvar Alterações',
+                    text: widget.acao == null ? 'Registar' : 'Guardar Alterações',
                     onPressed: _save,
                   ),
                 ],

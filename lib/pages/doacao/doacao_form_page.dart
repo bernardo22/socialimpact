@@ -193,7 +193,7 @@ class _DoacaoFormPageState extends State<DoacaoFormPage> {
                   ),
                   const SizedBox(height: 20),
                   CustomButton(
-                    text: widget.doacao == null ? 'Fazer Doação' : 'Salvar Alterações',
+                    text: widget.doacao == null ? 'Fazer Doação' : 'Guardar Alterações',
                     onPressed: _save,
                   ),
                 ],

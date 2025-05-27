@@ -203,7 +203,7 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
                   ],
                   const SizedBox(height: 20),
                   CustomButton(
-                    text: widget.participante == null ? 'Inscrever-se' : 'Salvar Alterações',
+                    text: widget.participante == null ? 'Inscrever-se' : 'Guardar Alterações',
                     onPressed: () async {
                       final participanteSalvo = await _save();
                       if (participanteSalvo != null && widget.participante == null) {

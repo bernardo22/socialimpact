@@ -97,7 +97,7 @@ class _VoluntarioFormPageState extends State<VoluntarioFormPage> {
                   ),
                   const SizedBox(height: 20),
                   CustomButton(
-                    text: widget.voluntario == null ? 'Cadastrar' : 'Salvar Alterações',
+                    text: widget.voluntario == null ? 'Registar' : 'Guardar Alterações',
                     onPressed: _save,
                   ),
                 ],
