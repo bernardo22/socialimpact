@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:socialimpact/models/participante.dart';
 import 'package:socialimpact/pages/home.dart';
+import 'package:socialimpact/services/acaovoluntariado_service.dart';
 import 'package:socialimpact/services/participante_service.dart';
 import 'package:socialimpact/services/voluntario_service.dart';
 import 'package:socialimpact/widgets/%20custom_button.dart';
@@ -66,7 +67,8 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
   void _fetchVoluntarioData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null && mounted) {
-      final voluntario = await VoluntarioService().getVoluntarioByEmail(user.email!);
+      final voluntario =
+          await VoluntarioService().getVoluntarioByEmail(user.email!);
       if (voluntario != null && mounted) {
         setState(() {
           _voluntarioIdCtrl.text = voluntario.voluntarioId;
@@ -101,11 +103,45 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
       return null;
     }
 
+  
+    if (widget.participante == null && widget.acaoVoluntariadoId != null) {
+      try {
+        final acao = await AcaoVoluntariadoService()
+            .getAcaoById(widget.acaoVoluntariadoId!);
+        if (acao == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Ação de voluntariado não encontrada')),
+          );
+          return null;
+        }
+        final today = DateTime.now();
+        final actionDate = DateTime(
+            acao.dataInicio.year, acao.dataInicio.month, acao.dataInicio.day);
+        final currentDate = DateTime(today.year, today.month, today.day);
+        if (actionDate.isBefore(currentDate)) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text('Não é possível inscrever-se em ações passadas')),
+          );
+          return null;
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao verificar a ação: $e')),
+        );
+        return null;
+      }
+    }
+
     try {
       final participante = Participante(
-        participanteAcaoVoluntariadoId: widget.participante?.participanteAcaoVoluntariadoId ?? '',
+        participanteAcaoVoluntariadoId:
+            widget.participante?.participanteAcaoVoluntariadoId ?? '',
         voluntarioId: _voluntarioIdCtrl.text.trim(),
-        acaoVoluntariadoId: widget.participante?.acaoVoluntariadoId ?? widget.acaoVoluntariadoId ?? '',
+        acaoVoluntariadoId: widget.participante?.acaoVoluntariadoId ??
+            widget.acaoVoluntariadoId ??
+            '',
         dataInscricao: _dataInscricao!,
         cancelou: _cancelou,
         participou: _participou,
@@ -131,7 +167,8 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Inscrição Confirmada! 🎉'),
-        content: Text('Sua inscrição na ação "${_acaoNome ?? ''}" foi efetuada com sucesso.'),
+        content: Text(
+            'Sua inscrição na ação "${_acaoNome ?? ''}" foi efetuada com sucesso.'),
         actions: [
           TextButton(
             onPressed: () {
@@ -155,7 +192,9 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AppBasePage(
-        title: widget.participante == null ? 'Novo Participante' : 'Editar Participante',
+        title: widget.participante == null
+            ? 'Novo Participante'
+            : 'Editar Participante',
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
@@ -182,14 +221,16 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
                     onTap: () => _selectDate(context),
                     child: InputDecorator(
                       decoration: const InputDecoration(
-                        labelText: 'Data de Inscrição',
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14)
-                      ),
-                      child: Text(_dataInscricao?.toLocal().toString().split(' ')[0] ?? 'Selecione a data'),
+                          labelText: 'Data de Inscrição',
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 14)),
+                      child: Text(
+                          _dataInscricao?.toLocal().toString().split(' ')[0] ??
+                              'Selecione a data'),
                     ),
                   ),
-                  if(!_isVoluntario) ...[
+                  if (!_isVoluntario) ...[
                     SwitchListTile(
                       title: const Text("Cancelou?"),
                       value: _cancelou,
@@ -203,10 +244,13 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
                   ],
                   const SizedBox(height: 20),
                   CustomButton(
-                    text: widget.participante == null ? 'Inscrever-se' : 'Guardar Alterações',
+                    text: widget.participante == null
+                        ? 'Inscrever-se'
+                        : 'Guardar Alterações',
                     onPressed: () async {
                       final participanteSalvo = await _save();
-                      if (participanteSalvo != null && widget.participante == null) {
+                      if (participanteSalvo != null &&
+                          widget.participante == null) {
                         if (!mounted) return;
                         _confirmationDialog(participanteSalvo);
                       } else if (participanteSalvo != null) {
