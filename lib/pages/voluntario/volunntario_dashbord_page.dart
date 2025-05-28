@@ -25,6 +25,7 @@ class _VoluntarioDashboardPageState extends State<VoluntarioDashboardPage> {
 
   String? _voluntarioId;
   String? _voluntarioNome;
+  String? _sortOption = 'data_asc';
 
   @override
   void initState() {
@@ -87,11 +88,42 @@ class _VoluntarioDashboardPageState extends State<VoluntarioDashboardPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              _buildSortDropdown(),
+              const SizedBox(height: 10),
               _buildVolunteerActionsList(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSortDropdown(){
+    return DropdownButton<String>(
+      value: _sortOption,
+      isExpanded: true,
+      hint: const Text('Ordenar por'),
+      items: const [
+        DropdownMenuItem(
+          value: 'data_asc',
+          child: Text('Data (Mais antiga primeiro)'),
+        ),
+        DropdownMenuItem(
+          value: 'data_desc',
+          child: Text('Data (Mais recente primeiro)')
+        ),
+        DropdownMenuItem(
+          value: 'name_asc',
+          child: Text('Nome (A-Z)'),
+        ),
+      ], 
+      onChanged: (value) {
+        if (value != null){
+          setState(() {
+            _sortOption = value;
+          });
+        }
+      }
     );
   }
 
@@ -119,6 +151,24 @@ class _VoluntarioDashboardPageState extends State<VoluntarioDashboardPage> {
 
             final acoes = acaoSnapshot.data!;
             final acaoMap = {for (var a in acoes) a.acaoVoluntariadoId: a};
+
+            final sortedParticipantes = List<Participante>.from(participantes);
+            sortedParticipantes.sort((a, b){
+                final acaoA = acaoMap[a.acaoVoluntariadoId];
+                final acaoB = acaoMap[b.acaoVoluntariadoId];
+                final nameA = acaoA?.nome ?? 'zzz';
+                final nameB = acaoB?.nome ?? 'zzz';
+                final dateA = acaoA?.dataInicio ?? DateTime.now();
+                final dateB = acaoB?.dataInicio ?? DateTime.now();
+
+                if(_sortOption == 'data_asc'){
+                  return dateA.compareTo(dateB);
+                } else if (_sortOption == 'date_desc') {
+                  return dateB.compareTo(dateA);
+                } else {
+                  return nameA.compareTo(nameB);
+                }
+            });
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
