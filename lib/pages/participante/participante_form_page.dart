@@ -38,6 +38,7 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
   String? _acaoNome;
   String? _voluntarioNome;
   bool _isVoluntario = false;
+  DateTime? _acaoDataInicio;
 
   @override
   void initState() {
@@ -50,9 +51,11 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
       _cancelou = p.cancelou;
       _participou = p.participou;
       _acaoNome = widget.acaoNome;
+      _fetchAcaoData(p.acaoVoluntariadoId);
     } else if (widget.acaoVoluntariadoId != null && widget.acaoNome != null) {
       _acaoNome = widget.acaoNome!;
       _dataInscricao = DateTime.now();
+      _fetchAcaoData(widget.acaoVoluntariadoId!);
     }
 
     _fetchVoluntarioData();
@@ -83,6 +86,22 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
     }
   }
 
+  _fetchAcaoData(String acaoVoluntariadoId) async {
+    try {
+      final acao =
+          await AcaoVoluntariadoService().getAcaoById(acaoVoluntariadoId);
+      if (acao != null && mounted) {
+        setState(() {
+          _acaoDataInicio = acao.dataInicio;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao carregar dados da ação: $e')),
+      );
+    }
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final picked = await showDatePicker(
       context: context,
@@ -102,8 +121,7 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
       );
       return null;
     }
-
-  
+    
     if (widget.participante == null && widget.acaoVoluntariadoId != null) {
       try {
         final acao = await AcaoVoluntariadoService()
@@ -180,12 +198,21 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
                 ),
               );
             },
-            // Change Text to "Home"
+            
             child: const Text('Ok Home'),
           ),
         ],
       ),
     );
+  }
+
+  bool _canEditParticipou() {
+    if (_acaoDataInicio == null) return false;
+    final today = DateTime.now();
+    final actionDate = DateTime(
+        _acaoDataInicio!.year, _acaoDataInicio!.month, _acaoDataInicio!.day);
+    final currentDate = DateTime(today.year, today.month, today.day);
+    return currentDate.isAfter(actionDate);
   }
 
   @override
@@ -239,7 +266,15 @@ class _ParticipanteFormPageState extends State<ParticipanteFormPage> {
                     SwitchListTile(
                       title: const Text("Participou?"),
                       value: _participou,
-                      onChanged: (val) => setState(() => _participou = val),
+                      onChanged: _canEditParticipou()
+                          ? (val) => setState(() => _participou = val)
+                          : null, // Disable if action date hasn't passed
+                      subtitle: !_canEditParticipou()
+                          ? const Text(
+                              'A participação só pode ser marcada após a data da ação.',
+                              style: TextStyle(color: Colors.red),
+                            )
+                          : null,
                     ),
                   ],
                   const SizedBox(height: 20),
