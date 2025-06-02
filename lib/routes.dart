@@ -1,7 +1,4 @@
-// routes.dart
-// ignore_for_file: use_super_parameters
-
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Center, MaterialPageRoute, Route, RouteSettings, Scaffold, Text;
 import 'package:socialimpact/models/acao_voluntariado.dart';
 import 'package:socialimpact/models/doacao.dart';
 import 'package:socialimpact/models/institucao.dart';
@@ -38,10 +35,10 @@ class AppRoutes {
 
   static const String completeProfile = '/complete-profile';
   // Institution Dashboard
-  static const String institutionDashboard = '/institution-dashboard'; 
-  // Doador Dashbord
+  static const String institutionDashboard = '/institution-dashboard';
+  // Doador Dashboard
   static const String doadorDashbord = '/doador-dashbord';
-  // Voluntario Dashbord
+  // Voluntario Dashboard
   static const String voluntariadoDashbord = '/voluntario-dashbord';
   // Gerir Page
   static const String gerirPage = '/gerir-page';
@@ -81,16 +78,16 @@ class AppRoutes {
       // Login-SignUp
       case loginSignup:
         return MaterialPageRoute(builder: (_) => const LoginSignupPage());
-      //Perfil Completo
+      // Perfil Completo
       case completeProfile:
         return MaterialPageRoute(builder: (_) => const CompleteProfilePage());
       // Institution Dashboard
       case institutionDashboard:
         return MaterialPageRoute(builder: (_) => const InstitutionDashboardPage());
-      // Doador Dashbord
+      // Doador Dashboard
       case doadorDashbord:
         return MaterialPageRoute(builder: (_) => const DoadorDashboardPage());
-      // Voluntario Dashbord
+      // Voluntario Dashboard
       case voluntariadoDashbord:
         return MaterialPageRoute(builder: (_) => const VoluntarioDashboardPage());
       // Gerir Page
@@ -100,7 +97,12 @@ class AppRoutes {
       case doadorList:
         return MaterialPageRoute(builder: (_) => const DoadorListPage());
       case addDoador:
-        return MaterialPageRoute(builder: (_) => const DoadorFormPage());
+        final args = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => DoadorFormPage(
+            email: args?['email'], 
+          ),
+        );
       case editDoador:
         final doador = settings.arguments as Doador;
         return MaterialPageRoute(builder: (_) => DoadorFormPage(doador: doador));
@@ -111,7 +113,7 @@ class AppRoutes {
         final args = settings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(
           builder: (_) => ProjetoCausaFormPage(
-            instituicaoId: args?['instituicaoId'], // Pass instituicaoId if provided
+            instituicaoId: args?['instituicaoId'], 
           ),
         );
       case editProjetoCausa:
@@ -122,7 +124,12 @@ class AppRoutes {
       case instituicaoList:
         return MaterialPageRoute(builder: (_) => const InstituicaoListPage());
       case addInstituicao:
-        return MaterialPageRoute(builder: (_) => const InstituicaoFormPage());
+        final args = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => InstituicaoFormPage(
+            email: args?['email'], 
+          ),
+        );
       case editInstituicao:
         final instituicao = settings.arguments as Instituicao;
         return MaterialPageRoute(
@@ -134,7 +141,7 @@ class AppRoutes {
         final args = settings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(
           builder: (_) => AcaoVoluntariadoFormPage(
-            instituicaoId: args?['instituicaoId'], // Pass instituicaoId if provided
+            instituicaoId: args?['instituicaoId'], 
           ),
         );
       case editAcaoVoluntariado:
@@ -159,7 +166,12 @@ class AppRoutes {
       case voluntarioList:
         return MaterialPageRoute(builder: (_) => const VoluntarioListPage());
       case addVoluntario:
-        return MaterialPageRoute(builder: (_) => const VoluntarioFormPage());
+        final args = settings.arguments as Map<String, dynamic>?;
+        return MaterialPageRoute(
+          builder: (_) => VoluntarioFormPage(
+            email: args?['email'],
+          ),
+        );
       case editVoluntario:
         final voluntario = settings.arguments as Voluntario;
         return MaterialPageRoute(

@@ -115,7 +115,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 Navigator.pushReplacementNamed(
                   context,
                   AppRoutes.addInstituicao,
-                  arguments: 'institution',
+                  arguments: {
+                    'userType': 'institution',
+                    'email': _signupEmailCtrl.text.trim(),
+                  },
                 );
               },
               icon: const Icon(Icons.business),
@@ -128,7 +131,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 Navigator.pushReplacementNamed(
                   context,
                   AppRoutes.addVoluntario,
-                  arguments: 'volunteer',
+                  arguments:{
+                    'userType': 'volunteer',
+                    'email': _signupEmailCtrl.text.trim(),
+                  }, 
                 );
               },
               icon: const Icon(Icons.person),
@@ -141,7 +147,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                 Navigator.pushReplacementNamed(
                   context,
                   AppRoutes.addDoador,
-                  arguments: 'doador',
+                  arguments: {
+                    'userType': 'doador',
+                    'email': _signupEmailCtrl.text.trim(),
+                  },
                 );
               },
               icon: const Icon(Icons.favorite),

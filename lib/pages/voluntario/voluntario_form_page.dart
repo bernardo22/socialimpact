@@ -9,8 +9,10 @@ import 'package:socialimpact/widgets/custom_widgets.dart';
 
 class VoluntarioFormPage extends StatefulWidget {
   final Voluntario? voluntario;
+  final String? email;
 
-  const VoluntarioFormPage({Key? key, this.voluntario}) : super(key: key);
+  const VoluntarioFormPage({Key? key, this.voluntario, this.email})
+      : super(key: key);
 
   @override
   State<VoluntarioFormPage> createState() => _VoluntarioFormPageState();
@@ -31,6 +33,8 @@ class _VoluntarioFormPageState extends State<VoluntarioFormPage> {
       _nomeCtrl.text = widget.voluntario!.nome;
       _emailCtrl.text = widget.voluntario!.email;
       _contactoCtrl.text = widget.voluntario!.contacto;
+    } else {
+      _emailCtrl.text = widget.email!;
     }
   }
 
@@ -69,9 +73,18 @@ class _VoluntarioFormPageState extends State<VoluntarioFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isEdit = widget.voluntario != null;
+
+    if (!isEdit) {
+      final args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      if (args != null && args.containsKey('email')) {
+        _emailCtrl.text = args['email'];
+      }
+    }
     return Scaffold(
       body: AppBasePage(
-        title: widget.voluntario == null ? 'Novo Voluntário' : 'Editar Voluntário',
+        title: isEdit ? 'Novo Voluntário' : 'Editar Voluntário',
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
@@ -83,21 +96,47 @@ class _VoluntarioFormPageState extends State<VoluntarioFormPage> {
                     controller: _nomeCtrl,
                     label: 'Nome',
                     isRequired: true,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'O nome é obrigatório.';
+                      }
+                      return null;
+                    },
                   ),
                   CustomTextField(
                     controller: _emailCtrl,
                     label: 'Email',
                     isRequired: true,
                     isEmail: true,
+                    enabled: !isEdit && widget.email == null,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'O email é obrigatório.';
+                      }
+                      if (!RegExp(
+                              r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                          .hasMatch(value)) {
+                        return 'Informe um email válido.';
+                      }
+                      return null;
+                    },
                   ),
                   CustomTextField(
                     controller: _contactoCtrl,
                     label: 'Contacto',
                     isRequired: true,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'O contacto é obrigatório.';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
                   CustomButton(
-                    text: widget.voluntario == null ? 'Registar' : 'Guardar Alterações',
+                    text: widget.voluntario == null
+                        ? 'Registar'
+                        : 'Guardar Alterações',
                     onPressed: _save,
                   ),
                 ],

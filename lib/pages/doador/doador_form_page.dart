@@ -9,8 +9,9 @@ import 'package:socialimpact/widgets/custom_widgets.dart';
 
 class DoadorFormPage extends StatefulWidget {
   final Doador? doador;
+  final String? email;
 
-  const DoadorFormPage({Key? key, this.doador}) : super(key: key);
+  const DoadorFormPage({Key? key, this.doador, this.email}) : super(key: key);
 
   @override
   State<DoadorFormPage> createState() => _DoadorFormPageState();
@@ -33,6 +34,8 @@ class _DoadorFormPageState extends State<DoadorFormPage> {
       _emailCtrl.text = widget.doador!.email;
       _contactoCtrl.text = widget.doador!.contacto;
       _nifCtrl.text = widget.doador!.nif;
+    } else{
+      _emailCtrl.text = widget.email!;
     }
   }
 
@@ -96,6 +99,14 @@ class _DoadorFormPageState extends State<DoadorFormPage> {
   @override
 Widget build(BuildContext context) {
   final isEdit = widget.doador != null;
+
+  if(!isEdit){
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    if(args != null && args.containsKey('email')){
+      _emailCtrl.text = args['email'];
+    }
+  }
+
   return Scaffold( 
     body: AppBasePage(
       title: isEdit ? 'Editar Doador' : 'Novo Doador',
@@ -124,6 +135,7 @@ Widget build(BuildContext context) {
                 label: 'Email',
                 isRequired: true,
                 isEmail: true,
+                enabled: !isEdit && widget.email == null,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'O email é obrigatório.';

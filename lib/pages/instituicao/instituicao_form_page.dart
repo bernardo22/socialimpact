@@ -9,8 +9,10 @@ import 'package:socialimpact/widgets/custom_widgets.dart';
 
 class InstituicaoFormPage extends StatefulWidget {
   final Instituicao? instituicao;
+  final String? email;
 
-  const InstituicaoFormPage({Key? key, this.instituicao}) : super(key: key);
+  const InstituicaoFormPage({Key? key, this.instituicao, this.email})
+      : super(key: key);
 
   @override
   State<InstituicaoFormPage> createState() => _InstituicaoFormPageState();
@@ -35,6 +37,8 @@ class _InstituicaoFormPageState extends State<InstituicaoFormPage> {
       _contactoCtrl.text = widget.instituicao!.contacto;
       _descricaoCtrl.text = widget.instituicao!.descricaoDetalhadaDaInstituicao;
       _emailCtrl.text = widget.instituicao!.email;
+    } else {
+      _emailCtrl.text = widget.email!;
     }
   }
 
@@ -65,7 +69,8 @@ class _InstituicaoFormPageState extends State<InstituicaoFormPage> {
           print("Nova instituição criada com ID: $id");
         } else {
           await _service.updateInstituicao(newInstituicao);
-          print("Instituição atualizada com ID: ${newInstituicao.instituicaoId}");
+          print(
+              "Instituição atualizada com ID: ${newInstituicao.instituicaoId}");
         }
 
         if (!mounted) return;
@@ -73,7 +78,8 @@ class _InstituicaoFormPageState extends State<InstituicaoFormPage> {
       } catch (e) {
         print("Erro ao salvar instituição: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Erro ao salvar instituição. Tente novamente.")),
+          SnackBar(
+              content: Text("Erro ao salvar instituição. Tente novamente.")),
         );
       }
     }
@@ -82,6 +88,14 @@ class _InstituicaoFormPageState extends State<InstituicaoFormPage> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.instituicao != null;
+    if (!isEdit) {
+      final args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      if (args != null && args.containsKey('email')) {
+        _emailCtrl.text = args['email'];
+      }
+    }
+
     return Scaffold(
       body: AppBasePage(
         title: isEdit ? 'Editar Instituição' : 'Nova Instituição',
@@ -95,27 +109,65 @@ class _InstituicaoFormPageState extends State<InstituicaoFormPage> {
                   controller: _nomeCtrl,
                   label: 'Nome da Instituição',
                   isRequired: true,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'O nome é obrigatório.';
+                    }
+                    return null;
+                  },
                 ),
                 CustomTextField(
                   controller: _enderecoCtrl,
                   label: 'Endereço',
                   isRequired: true,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'O endereço é obrigatório.';
+                    }
+                    return null;
+                  },
                 ),
                 CustomTextField(
                   controller: _contactoCtrl,
                   label: 'Contacto',
                   isRequired: true,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'O contacto é obrigatório.';
+                    }
+                    return null;
+                  },
                 ),
                 CustomTextField(
                   controller: _descricaoCtrl,
                   label: 'Descrição Detalhada',
                   isRequired: true,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'A descrição é obrigatória.';
+                    }
+                    return null;
+                  },
                 ),
                 CustomTextField(
                   controller: _emailCtrl,
                   label: 'Email',
                   isRequired: true,
                   isEmail: true,
+                  enabled: !isEdit &&
+                      widget.email ==
+                          null, // Disable if email is passed or editing
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'O email é obrigatório.';
+                    }
+                    if (!RegExp(
+                            r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                        .hasMatch(value)) {
+                      return 'Informe um email válido.';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 20),
                 CustomButton(
