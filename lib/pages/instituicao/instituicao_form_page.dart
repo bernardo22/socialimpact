@@ -113,6 +113,9 @@ class _InstituicaoFormPageState extends State<InstituicaoFormPage> {
                     if (value == null || value.trim().isEmpty) {
                       return 'O nome é obrigatório.';
                     }
+                    if (!RegExp(r'^[a-zA-ZÀ-ÿ\s]+$').hasMatch(value)) {
+                      return 'O nome deve conter apenas letras.';
+                    }
                     return null;
                   },
                 ),
@@ -134,6 +137,9 @@ class _InstituicaoFormPageState extends State<InstituicaoFormPage> {
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'O contacto é obrigatório.';
+                    }
+                    if (!RegExp(r'^9\d{8}$').hasMatch(value)) {
+                      return 'O contacto deve ter 9 dígitos e começar com 9.';
                     }
                     return null;
                   },
