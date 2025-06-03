@@ -83,16 +83,7 @@ class _DoacaoFormPageState extends State<DoacaoFormPage> {
       print("Erro ao buscar dados do Doador: $e");
     }
   }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) setState(() => _dataDoacao = picked);
-  }
+  
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
@@ -108,7 +99,7 @@ class _DoacaoFormPageState extends State<DoacaoFormPage> {
       final double valor = double.tryParse(_valorDoadoCtrl.text.trim()) ?? 0.0;
 
       if (widget.doacao == null) {
-        // Navigate to payment page
+
         if (!mounted) return;
         Navigator.push(
           context,
@@ -146,7 +137,7 @@ class _DoacaoFormPageState extends State<DoacaoFormPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AppBasePage(
-        title: widget.doacao == null ? 'Nova Doação' : 'Editar Doação',
+        title: 'Nova Doação',
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Form(
@@ -174,26 +165,38 @@ class _DoacaoFormPageState extends State<DoacaoFormPage> {
                     label: 'Valor Doado (€)',
                     isRequired: true,
                     isNumber: true,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'O valor a doar é obrigatório.';
+                      }
+                      final double? valor = double.tryParse(value.trim());
+                      if (valor == null) {
+                        return 'Por favor, insira um valor válido.';
+                      }
+                      if (valor < 0.5) {
+                        return 'O valor a doar deve ser no mínimo 0,50 €.';
+                      }
+                      return null;
+                    },
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: InkWell(
-                      onTap: () => _selectDate(context),
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Data da Doação',
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                        ),
-                        child: Text(
-                          _dataDoacao?.toLocal().toString().split(' ')[0] ?? 'Selecione a data',
-                        ),
-                      ),
+                  CustomTextField(
+                    controller: TextEditingController(
+                      text: _dataDoacao?.toLocal().toString().split(' ')[0] ??
+                          DateTime.now().toLocal().toString().split(' ')[0],
                     ),
+                    label: 'Data da Doação',
+                    isRequired: true,
+                    enabled: false, 
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'A data da doação é obrigatória.';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
                   CustomButton(
-                    text: widget.doacao == null ? 'Fazer Doação' : 'Guardar Alterações',
+                    text: 'Fazer Doação',
                     onPressed: _save,
                   ),
                 ],

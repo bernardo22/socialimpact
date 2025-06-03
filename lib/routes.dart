@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart' show Center, MaterialPageRoute, Route, RouteSettings, Scaffold, Text;
 import 'package:socialimpact/models/acao_voluntariado.dart';
-import 'package:socialimpact/models/doacao.dart';
 import 'package:socialimpact/models/institucao.dart';
 import 'package:socialimpact/models/participante.dart';
 import 'package:socialimpact/models/projeto_causa.dart';
@@ -159,9 +158,7 @@ class AppRoutes {
             categoria: args['categoria'],
           ),
         );
-      case editDoacao:
-        final doacao = settings.arguments as Doacao;
-        return MaterialPageRoute(builder: (_) => DoacaoFormPage(doacao: doacao));
+
       // Voluntario Routes
       case voluntarioList:
         return MaterialPageRoute(builder: (_) => const VoluntarioListPage());
